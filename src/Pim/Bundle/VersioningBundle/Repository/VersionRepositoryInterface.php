@@ -2,9 +2,6 @@
 
 namespace Pim\Bundle\VersioningBundle\Repository;
 
-use Akeneo\Component\StorageUtils\Cursor\CursorFactoryInterface;
-use Akeneo\Component\StorageUtils\Cursor\CursorInterface;
-
 /**
  * Version repository interface
  *
@@ -92,9 +89,4 @@ interface VersionRepositoryInterface
      * @return CursorInterface
      */
     public function findVersionsByResources($resourceName, array $options = []);
-
-    /**
-     * @param CursorFactoryInterface $cursorFactory
-     */
-    public function setCursorFactory(CursorFactoryInterface $cursorFactory);
 }
