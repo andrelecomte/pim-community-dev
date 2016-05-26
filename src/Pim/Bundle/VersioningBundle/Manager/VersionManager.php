@@ -4,6 +4,7 @@ namespace Pim\Bundle\VersioningBundle\Manager;
 
 use Akeneo\Bundle\StorageUtilsBundle\Doctrine\SmartManagerRegistry;
 use Akeneo\Component\Versioning\Model\Version;
+use Akeneo\Component\Versioning\Model\VersionInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Util\ClassUtils;
@@ -34,7 +35,6 @@ class VersionManager
 
     /** @staticvar string */
     const OPERATOR_DATE_YOUNGER = '>';
-
 
     /**
      * @var bool
@@ -284,36 +284,5 @@ class VersionManager
         }
 
         return $createdVersions;
-    }
-
-    /**
-     * List versions of entity. If a date is provided it should delete versions older than the number of days
-     *
-     * @param string $resourceName
-     * @param int $numberOfDays
-     * @param string $operator
-     *
-     * @return Version[]
-     */
-    public function getVersionsByDate($resourceName, $operator = self::OPERATOR_DATE_OLDER, $numberOfDays = 0)
-    {
-        $limitDate = date_sub(
-            new \Datetime('now', new \DateTimeZone('UTC')),
-            date_interval_create_from_date_string(
-                sprintf('%s days', $numberOfDays)
-            )
-        );
-
-        return $this->getVersionRepository()->getResourcesByDate($resourceName, $operator, $limitDate);
-    }
-
-    /**
-     * Delete versions of entity. If a date is provided it should delete versions older than the number of days
-     *
-     * @param array $versions
-     */
-    public function purgeVersions(array $versions)
-    {
-        $this->getVersionRepository()->purgeResources($versions);
     }
 }

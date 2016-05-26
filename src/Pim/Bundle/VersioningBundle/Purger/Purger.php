@@ -24,7 +24,7 @@ class Purger implements PurgerInterface
     protected $objectDetacher;
 
     /** @var array */
-    protected $purgerAdvisors = [];
+    protected $advisors = [];
 
     public function __construct(
         VersionRepositoryInterface $versionRepository,
@@ -45,8 +45,8 @@ class Purger implements PurgerInterface
         $versionsCursor = $this->versionRepository->findVersionsByResources($resourceName);
         
         foreach ($versionsCursor as $version) {
-            if ($this->versionToPurge($version)) {
-                // $this->objectDetacher->remove($version);
+            if ($this->isVersionToPurge($version, $options)) {
+                $this->versionRepository->purgeVersion($version);
                 $this->objectDetacher->detach($version);
             }
         }
@@ -56,13 +56,14 @@ class Purger implements PurgerInterface
      * Checks if all advisors agree on deleting the version
      *
      * @param VersionInterface $version
+     * @param array $options
      *
      * @return bool
      */
-    public function versionToPurge(VersionInterface $version)
+    public function isVersionToPurge(VersionInterface $version, array $options = [])
     {
-        foreach ($this->purgerAdvisors as $advisor) {
-            if ($advisor->supports($version) && !$advisor->isPurgeable($version)) {
+        foreach ($this->advisors as $advisor) {
+            if ($advisor->supports($version) && !$advisor->isPurgeable($version, $options)) {
 
                 return false;
             }
@@ -78,6 +79,6 @@ class Purger implements PurgerInterface
      */
     public function addAdvisor(AdvisorInterface $advisor)
     {
-        $this->purgerAdvisors[] = $advisor;
+        $this->advisors[] = $advisor;
     }
 }

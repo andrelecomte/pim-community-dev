@@ -2,9 +2,12 @@
 
 namespace Pim\Bundle\VersioningBundle\Doctrine\ORM;
 
+use Akeneo\Bundle\StorageUtilsBundle\Doctrine\ORM\Repository\CursorableRepositoryInterface;
 use Akeneo\Component\StorageUtils\Cursor\CursorFactoryInterface;
 use Akeneo\Component\StorageUtils\Cursor\CursorInterface;
+use Akeneo\Component\Versioning\Model\VersionInterface;
 use Doctrine\ORM\EntityRepository;
+use Pim\Bundle\CatalogBundle\Version;
 use Pim\Bundle\VersioningBundle\Repository\VersionRepositoryInterface;
 
 /**
@@ -14,7 +17,7 @@ use Pim\Bundle\VersioningBundle\Repository\VersionRepositoryInterface;
  * @copyright 2013 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class VersionRepository extends EntityRepository implements VersionRepositoryInterface
+class VersionRepository extends EntityRepository implements VersionRepositoryInterface, CursorableRepositoryInterface
 {
     /** @var CursorFactoryInterface */
     protected $cursorFactory;
@@ -149,11 +152,38 @@ class VersionRepository extends EntityRepository implements VersionRepositoryInt
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function purgeVersion(VersionInterface $version)
+    {
+        $em = $this->getEntityManager();
+        $em->remove($version);
+        $em->flush();
+    }
+
+    /**
      * @param CursorFactoryInterface $cursorFactory
      */
     public function setCursorFactory(CursorFactoryInterface $cursorFactory)
     {
         $this->cursorFactory = $cursorFactory;
+    }
+
+    /**
+     * @param array $versionIds
+     *
+     * @return array
+     */
+    public function findByIds(array $versionIds)
+    {
+        if (empty($versionIds)) {
+            throw new \InvalidArgumentException('Array must contain at least one family id');
+        }
+
+        $qb = $this->createQueryBuilder('v');
+        $qb->where($qb->expr()->in('v.id', $versionIds));
+
+        return $qb->getQuery()->getResult();
     }
 
     /**

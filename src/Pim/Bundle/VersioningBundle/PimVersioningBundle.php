@@ -25,7 +25,8 @@ class PimVersioningBundle extends Bundle
     {
         $container
             ->addCompilerPass(new Compiler\RegisterUpdateGuessersPass())
-            ->addCompilerPass(new RegisterSerializerPass('pim_versioning.serializer'));
+            ->addCompilerPass(new RegisterSerializerPass('pim_versioning.serializer'))
+            ->addCompilerPass(new Compiler\RegisterPurgeAdvisorPass());
 
         $versionMappings = [
             realpath(__DIR__ . '/Resources/config/model/doctrine') => 'Akeneo\Component\Versioning\Model'

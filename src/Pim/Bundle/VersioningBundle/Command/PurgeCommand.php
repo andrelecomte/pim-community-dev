@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Monolog\Handler\StreamHandler;
 use Pim\Bundle\BaseConnectorBundle\Cache\CacheClearer;
 use Pim\Bundle\VersioningBundle\Manager\VersionManager;
+use Pim\Bundle\VersioningBundle\Purger\PurgerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -89,34 +90,22 @@ class PurgeCommand extends ContainerAwareCommand
 
         $isDryRun = $input->getOption('dry-run');
 
-        $numberOfDays = $input->getOption('more-than-days');
-        $lessThanDays = $input->getOption('less-than-days');
+        $numberOfDays = (int) $input->getOption('more-than-days');
+        $lessThanDays = (int) $input->getOption('less-than-days');
 
-        $versionManager = $this->getVersionManager();
-        $dateOperator = $versionManager::OPERATOR_DATE_OLDER;
+        $purgeOptions['days_number'] = $numberOfDays;
+        $purgeOptions['days_operator'] = '<';
 
         if ($lessThanDays > $numberOfDays) {
-            $dateOperator = $versionManager::OPERATOR_DATE_YOUNGER;
-            $numberOfDays = $lessThanDays;
+            $purgeOptions['days_number'] = $lessThanDays;
+            $purgeOptions['days_operator'] = '>';
         } elseif (0 < $lessThanDays) {
             $output->writeln('<info>Warning. Both --more-than-days and --less-than-days options have been set. The option used will be --more-than-days.</info>');
         }
 
-        $versions = $versionManager->getVersionsByDate($resourceName, $dateOperator, $numberOfDays);
-        if (0 === count($versions)) {
-            $output->writeln(sprintf('<info>No versions found for entity %s. Nothing to do.</info>', count($versions)));
-
-            return;
-        }
-        if ($isDryRun) {
-            $output->writeln(sprintf('<info>Dry run mode activated. %s versions were found for deletion.</info>', count($versions)));
-
-            return;
-        }
-
-        $output->writeln(sprintf('<info>%s number of versions set for deletion for entity %s.</info>', count($versions), $entityType));
-        $versionManager->purgeVersions($versions);
-        $output->writeln(sprintf('<info>%s versions of %s successfully deleted.</info>', count($versions), $entityType));
+        $output->writeln(sprintf('<info>Starting the deletion for entity %s.</info>', $entityType));
+        $this->getVersionPurger()->purge($resourceName, $purgeOptions);
+        $output->writeln(sprintf('<info>Successfully delete the versions of entity type %s.</info>', $entityType));
     }
 
     /**
@@ -125,5 +114,13 @@ class PurgeCommand extends ContainerAwareCommand
     protected function getVersionManager()
     {
         return $this->getContainer()->get('pim_versioning.manager.version');
+    }
+
+    /**
+     * @return PurgerInterface
+     */
+    protected function getVersionPurger()
+    {
+        return $this->getContainer()->get('pim_versioning.purger.version');
     }
 }

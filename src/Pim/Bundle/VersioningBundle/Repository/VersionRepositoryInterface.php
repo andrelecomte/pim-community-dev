@@ -2,6 +2,8 @@
 
 namespace Pim\Bundle\VersioningBundle\Repository;
 
+use Akeneo\Component\Versioning\Model\VersionInterface;
+
 /**
  * Version repository interface
  *
@@ -89,4 +91,11 @@ interface VersionRepositoryInterface
      * @return CursorInterface
      */
     public function findVersionsByResources($resourceName, array $options = []);
+
+    /**
+     * Remove version from the database
+     *
+     * @param VersionInterface $version
+     */
+    public function purgeVersion(VersionInterface $version);
 }

@@ -13,13 +13,13 @@ use Symfony\Component\DependencyInjection\Reference;
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class RegisterPurgeVoterPass implements CompilerPassInterface
+class RegisterPurgeAdvisorPass implements CompilerPassInterface
 {
     /** @staticvar string */
     const REGISTRY_ID = 'pim_versioning.purger.version';
 
     /** @staticvar string */
-    const VOTER_TAG_NAME = 'pim_versioning.purger.voter';
+    const VOTER_TAG_NAME = 'pim_versioning.purger.advisor';
 
     /**
      * {@inheritdoc}

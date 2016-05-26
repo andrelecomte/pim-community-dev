@@ -1,7 +1,7 @@
 parameters:
-    pim_versioning.purger.version.class: Pim\Bundle\VersioningBundle\Purger\VersionPurger
-    pim_versioning.purger.voter.base_purger.class: Pim\Bundle\VersioningBundle\Purger\BasePurgeVoter
-    pim_versioning.purger.voter.number_of_days.class: Pim\Bundle\VersioningBundle\Purger\BasePurgeVoter
+    pim_versioning.purger.version.class: Pim\Bundle\VersioningBundle\Purger\Purger
+    pim_versioning.purger.advisor.base_purger.class: Pim\Bundle\VersioningBundle\Purger\BaseAdvisor
+    pim_versioning.purger.advisor.number_of_days.class: Pim\Bundle\VersioningBundle\Purger\NumberOfDaysAdvisor
 
 services:
     # Purger
@@ -11,15 +11,15 @@ services:
             - '@pim_versioning.repository.version'
             - '@akeneo_storage_utils.doctrine.object_detacher'
 
-    # Voters
-    pim_versioning.purger.voter.base:
-        class: '%pim_versioning.purger.voter.base_purger.class%'
+    # advisors
+    pim_versioning.purger.advisor.base:
+        class: '%pim_versioning.purger.advisor.base_purger.class%'
         arguments: ['@pim_versioning.repository.version']
         tags:
-            - { name: pim_versioning.purger.voter }
+            - { name: pim_versioning.purger.advisor }
 
-    pim_versioning.purger.voter.number_of_days:
-        class: '%pim_versioning.purger.voter.number_of_days.class%'
+    pim_versioning.purger.advisor.number_of_days:
+        class: '%pim_versioning.purger.advisor.number_of_days.class%'
         arguments: ['@pim_versioning.repository.version']
         tags:
-            - { name: pim_versioning.purger.voter }
+            - { name: pim_versioning.purger.advisor }

@@ -33,21 +33,28 @@ class BaseAdvisor implements AdvisorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Prevent first and last versions from being purged
+     *
+     * @param VersionInterface $version
+     * @param array $options
+     *
+     * @return bool
      */
     public function isPurgeable(VersionInterface $version, array $options)
     {
+        if (1 === $version->getVersion()) {
+            return false;
+        }
+
         $latestVersion = $this->versionRepository->getNewestLogEntry(
             $version->getResourceName(),
             $version->getResourceId()
         );
 
-        $isNotLastVersion = null === $latestVersion || $latestVersion->getId() !== $version->getId();
-
-        if ($version->getVersion() > 1 || $isNotLastVersion) {
-            return true;
+        if (null !== $latestVersion && $latestVersion->getId() === $version->getId()) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 }
