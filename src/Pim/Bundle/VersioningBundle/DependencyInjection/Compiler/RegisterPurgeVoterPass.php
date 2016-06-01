@@ -35,7 +35,7 @@ class RegisterPurgeVoterPass implements CompilerPassInterface
         $taggedServices = $container->findTaggedServiceIds(self::VOTER_TAG_NAME);
 
         foreach (array_keys($taggedServices) as $id) {
-            $service->addMethodCall('addVoter', [new Reference($id)]);
+            $service->addMethodCall('addAdvisor', [new Reference($id)]);
         }
     }
 }

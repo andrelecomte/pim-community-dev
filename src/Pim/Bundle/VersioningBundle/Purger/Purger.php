@@ -5,16 +5,17 @@ namespace Pim\Bundle\VersioningBundle\Purger;
 use Akeneo\Bundle\StorageUtilsBundle\Doctrine\Common\Detacher\ObjectDetacher;
 use Akeneo\Component\StorageUtils\Detacher\ObjectDetacherInterface;
 use Akeneo\Component\Versioning\Model\VersionInterface;
+use Pim\Bundle\CatalogBundle\Doctrine\ORM\QueryBuilderUtility;
 use Pim\Bundle\VersioningBundle\Repository\VersionRepositoryInterface;
 
 /**
- * Purge versions according to registered voters
+ * Purge versions according to registered advisors
  *
  * @author    Samir Boulil <samir.boulil@akeneo.com>
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class VersionPurger implements VersionPurgerInterface
+class Purger implements PurgerInterface
 {
     /** @var VersionRepositoryInterface */
     protected $versionRepository;
@@ -23,13 +24,13 @@ class VersionPurger implements VersionPurgerInterface
     protected $objectDetacher;
 
     /** @var array */
-    protected $purgerVoters = [];
+    protected $purgerAdvisors = [];
 
     public function __construct(
         VersionRepositoryInterface $versionRepository,
         ObjectDetacherInterface $objectDetacher
     ) {
-        $this->repository = $versionRepository;
+        $this->versionRepository = $versionRepository;
         $this->objectDetacher = $objectDetacher;
     }
 
@@ -41,12 +42,7 @@ class VersionPurger implements VersionPurgerInterface
      */
     public function purge($resourceName, array $options)
     {
-        // Find all does not scale
-        // Works alright in mongo
-        // ORM needs a pager implementations
-
-        // $versionsCursor = $this->versionRepository->findAll()
-        $versionCursor = [];
+        $versionsCursor = $this->versionRepository->findVersionsByResources($resourceName);
         
         foreach ($versionsCursor as $version) {
             if ($this->versionToPurge($version)) {
@@ -56,13 +52,8 @@ class VersionPurger implements VersionPurgerInterface
         }
     }
 
-    public function getVersionsCursor($resourceName, $options)
-    {
-
-    }
-
     /**
-     * Checks if all voters agree on deleting the version
+     * Checks if all advisors agree on deleting the version
      *
      * @param VersionInterface $version
      *
@@ -70,8 +61,8 @@ class VersionPurger implements VersionPurgerInterface
      */
     public function versionToPurge(VersionInterface $version)
     {
-        foreach ($this->purgerVoters as $voter) {
-            if ($voter->supports($version) && !$voter->isPurgeable($version)) {
+        foreach ($this->purgerAdvisors as $advisor) {
+            if ($advisor->supports($version) && !$advisor->isPurgeable($version)) {
 
                 return false;
             }
@@ -81,12 +72,12 @@ class VersionPurger implements VersionPurgerInterface
     }
 
     /**
-     * Register a voter
+     * Register a advisor
      *
-     * @param VoterInterface $voter
+     * @param AdvisorInterface $advisor
      */
-    public function addVoter(PurgeVoterInterface $voter)
+    public function addAdvisor(AdvisorInterface $advisor)
     {
-        $this->purgerVoters[] = $voter;
+        $this->purgerAdvisors[] = $advisor;
     }
 }

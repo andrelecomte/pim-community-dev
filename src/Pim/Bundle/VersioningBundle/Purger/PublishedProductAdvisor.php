@@ -3,7 +3,6 @@
 namespace PimEnterprise\Bundle\VersioningBundle;
 
 use Akeneo\Component\Versioning\Model\VersionInterface;
-use Pim\Bundle\VersioningBundle\VoterInterface;
 use PimEnterprise\Component\Workflow\Repository\PublishedProductRepositoryInterface;
 
 /**
@@ -13,7 +12,7 @@ use PimEnterprise\Component\Workflow\Repository\PublishedProductRepositoryInterf
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class PublishedProductPurgeVoter implements VoterInterface
+class PublishedProductAdvisor implements AdvisorInterfacee
 {
     protected $publishedProductRepository;
 

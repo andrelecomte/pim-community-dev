@@ -2,6 +2,8 @@
 
 namespace Pim\Bundle\VersioningBundle\Doctrine\ORM;
 
+use Akeneo\Component\StorageUtils\Cursor\CursorFactoryInterface;
+use Akeneo\Component\StorageUtils\Cursor\CursorInterface;
 use Doctrine\ORM\EntityRepository;
 use Pim\Bundle\VersioningBundle\Repository\VersionRepositoryInterface;
 
@@ -14,6 +16,9 @@ use Pim\Bundle\VersioningBundle\Repository\VersionRepositoryInterface;
  */
 class VersionRepository extends EntityRepository implements VersionRepositoryInterface
 {
+    /** @var CursorFactoryInterface */
+    protected $cursorFactory;
+
     /**
      * {@inheritdoc}
      */
@@ -115,6 +120,40 @@ class VersionRepository extends EntityRepository implements VersionRepositoryInt
         }
 
         return $qb;
+    }
+
+    /**
+     * Find all versions by entity name
+     *
+     * @param $resourceName
+     * @param $options
+     *
+     * @return CursorInterface
+     */
+    public function findVersionsByResources($resourceName, array $options = [])
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->where('v.resourceName = :resourceName');
+        $qb->setParameter(':resourceName', $resourceName);
+
+        if (isset($options['loggedAt'])) {
+            if ($options['loggedAt']['operator'] === '<') {
+                $qb->andWhere($qb->expr()->lt('v.loggedAt', ':limit_date'));
+            } else {
+                $qb->andWhere($qb->expr()->gt('v.loggedAt', ':limit_date'));
+            }
+            $qb->setParameter('limit_date', $options['loggedAt']['value'], \Doctrine\DBAL\Types\Type::DATETIME);
+        }
+
+        return $this->cursorFactory->createCursor($qb);
+    }
+
+    /**
+     * @param CursorFactoryInterface $cursorFactory
+     */
+    public function setCursorFactory(CursorFactoryInterface $cursorFactory)
+    {
+        $this->cursorFactory = $cursorFactory;
     }
 
     /**

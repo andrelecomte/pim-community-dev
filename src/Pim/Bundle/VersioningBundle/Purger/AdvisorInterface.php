@@ -11,10 +11,10 @@ use Akeneo\Component\Versioning\Model\VersionInterface;
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-interface PurgeVoterInterface
+interface AdvisorInterface
 {
     /**
-     * Checks if the voter is supports the version
+     * Checks if the advisor supports the version
      *
      * @param VersionInterface $version
      *
