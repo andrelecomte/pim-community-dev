@@ -55,4 +55,4 @@ Feature: Edit a channel
     Given I am logged in as "Julien"
     And  I am on the "tablet" channel page
     And I fill in the following information:
-      | Length | Kilomètre |
+      | Longueur | Kilomètre |

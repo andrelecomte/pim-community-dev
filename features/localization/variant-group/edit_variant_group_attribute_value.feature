@@ -20,7 +20,7 @@ Feature: Editing localized attribute values of a variant group also updates prod
     And I visit the "Attributs" tab
 
   Scenario: Successfully change a pim_catalog_metric attribute of a variant group
-    Given I change the "Weight" to "5,45"
+    Given I change the "Poids" to "5,45"
     When I save the variant group
     Then I should see the text "Le groupe de variantes a bien été mis à jour"
     Then the product "boot" should have the following values:
