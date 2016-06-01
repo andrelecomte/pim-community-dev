@@ -79,7 +79,7 @@ class ProductExportController
     {
         $displayedColumnsOnly = (bool) $this->request->get('_displayedColumnsOnly');
         $jobCode              = $this->request->get('_jobCode');
-        $jobInstance          = $this->jobInstanceRepo->findOneBy(['code' => $jobCode]);
+        $jobInstance          = $this->jobInstanceRepo->findOneByIdentifier(['code' => $jobCode]);
 
         if (null === $jobInstance) {
             throw new \RuntimeException(sprintf('Jobinstance "%s" is not well configured', $jobCode));

@@ -50,14 +50,14 @@ class ProductToFlatArrayProcessor extends AbstractProcessor
     protected $fieldSplitter;
 
     /**
-     * @param SerializerInterface $serializer
+     * @param SerializerInterface        $serializer
      * @param ChannelRepositoryInterface $channelRepository
-     * @param ProductBuilderInterface $productBuilder
-     * @param ObjectDetacherInterface $objectDetacher
-     * @param UserProviderInterface $userProvider
-     * @param TokenStorageInterface $tokenStorage
-     * @param FieldSplitter $fieldSplitter
-     * @param string $uploadDirectory
+     * @param ProductBuilderInterface    $productBuilder
+     * @param ObjectDetacherInterface    $objectDetacher
+     * @param UserProviderInterface      $userProvider
+     * @param TokenStorageInterface      $tokenStorage
+     * @param FieldSplitter              $fieldSplitter
+     * @param string                     $uploadDirectory
      */
     public function __construct(
         SerializerInterface $serializer,
@@ -133,10 +133,10 @@ class ProductToFlatArrayProcessor extends AbstractProcessor
      * filter the properties that has to be exported based on a product and a list of properties
      *
      * @param ProductInterface $product
-     * @param array $normalizedProduct
-     * @param array $properties
-     * @param string $localeCode
-     * @param string $channelCode
+     * @param array            $normalizedProduct
+     * @param array            $properties
+     * @param string           $localeCode
+     * @param string           $channelCode
      *
      * @return array
      */
@@ -182,20 +182,19 @@ class ProductToFlatArrayProcessor extends AbstractProcessor
 
     /**
      * @param ProductInterface $product
-     * @param $attributeCode
+     * @param string           $attributeCode
      *
-     * @return AttributeInterface
+     * @return AttributeInterface|null
      */
     protected function getProductAttributeByCode(ProductInterface $product, $attributeCode)
     {
-        $attribute = null;
         foreach ($product->getValues() as $value) {
             if ($attributeCode === $value->getAttribute()->getCode()) {
-                $attribute = $value->getAttribute();
+                return $value->getAttribute();
             }
         }
 
-        return $attribute;
+        return null;
     }
 
     /**

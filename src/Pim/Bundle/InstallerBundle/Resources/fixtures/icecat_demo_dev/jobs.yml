@@ -274,8 +274,9 @@ jobs:
         label: XLSX product quick export grid context
         type: quick_export
         configuration:
-            withHeader: true
-            filePath:   /tmp/products_export_grid_context_%locale%_%scope%_%datetime%.xlsx
+            withHeader:   true
+            filePath:     /tmp/products_export_grid_context_%locale%_%scope%_%datetime%.xlsx
+            linesPerFile: 10000
     xlsx_product_import:
         connector: Akeneo XLSX Connector
         alias:     xlsx_product_import
