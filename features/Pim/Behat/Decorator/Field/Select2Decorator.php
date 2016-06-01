@@ -4,6 +4,7 @@ namespace Pim\Behat\Decorator\Field;
 
 use Behat\Mink\Element\NodeElement;
 use Context\Spin\SpinCapableTrait;
+use Context\Spin\SpinException;
 use Pim\Behat\Decorator\ElementDecorator;
 
 class Select2Decorator extends ElementDecorator
@@ -32,15 +33,21 @@ class Select2Decorator extends ElementDecorator
                 )
             );
 
-            $result = $this->spin(function () use ($widget, $value) {
-                return $widget->find('css', sprintf('.select2-result-label:contains("%s")', $value));
-            }, sprintf(
-                'Could not find any result available with value "%s" for attributes "%s"',
-                $value,
-                $this->getAttribute('data-name')
-            ));
+            $this->spin(function () use ($widget, $value) {
+                $result = $widget->find('css', sprintf('.select2-result-label:contains("%s")', $value));
 
-            $result->click();
+                if (null !== $result) {
+                    $result->click();
+
+                    return true;
+                }
+
+                throw new SpinException(sprintf(
+                    'Could not find any result available with value "%s" for attributes "%s"',
+                    $value,
+                    $this->getAttribute('data-name')
+                ));
+            }, sprintf('A result has been found for "%s", but it seems we can not click on it.', $value));
         }
 
         $this->close();
