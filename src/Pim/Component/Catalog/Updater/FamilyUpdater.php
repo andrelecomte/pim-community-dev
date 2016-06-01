@@ -274,6 +274,7 @@ class FamilyUpdater implements ObjectUpdaterInterface
         if (null === $requirement) {
             $requirement = $this->attrRequiFactory->createAttributeRequirement($attribute, $channel, true);
         }
+        $requirement->setRequired(true);
 
         return $requirement;
     }
